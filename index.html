@@ -1,0 +1,122 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>웹기초 과제</title>
+    <!-- CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/templatemo-chain-app-dev.css">
+    <link rel="stylesheet" href="assets/css/animated.css">
+  </head>
+<body>
+  <div class="main-banner wow fadeIn" id="top" data-wow-duration="1s" data-wow-delay="0.5s">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="row">
+            <div class="col-lg-6 align-self-center">
+              <div class="left-content show-up header-text wow fadeInLeft" data-wow-duration="1s" data-wow-delay="1s">
+                <div class="row">
+                  <div class="col-lg-12">
+                    <h2>이동준의 웹싸이트</h2>
+                    <p>
+                      웹기초 과제입니다<br>
+                    </p>
+                  </div>
+                  <div class="col-lg-12">
+                    <div class="white-button first-button scroll-to-section">
+                      <a href="https://songsu.quickconnect.to/">이동준의 개인용 서버로 이동하기</a>
+                    </div>
+                  </div>
+                  <div class="nas_ID">
+                      <div>관련 업력과 경력 사항을 올려놓았으며,</div>                      
+                      <div>ID & Passward는 </div>
+                      <div>ID : 손님이올시다</div>
+                      <div>PW : F(_:Ys</div>                      
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="right-image wow fadeInRight" data-wow-duration="1s" data-wow-delay="0.5s">
+                <img src="assets/images/slider-dec.png" alt="">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- JS -->
+  <script src="assets/js/animation.js"></script>
+  
+  <!--teachable-->
+  <div style="visibility: hidden; position: absolute;" id="webcam-container"></div>
+  <div id="label-container"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+  <script type="text/javascript">
+      // More API functions here:
+      // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
+  
+      // the link to your model provided by Teachable Machine export panel
+      const URL = "https://teachablemachine.withgoogle.com/models/htUbVT2mC/";
+  
+      let model, webcam, labelContainer, maxPredictions;  
+      // Load the image model and setup the webcam
+      async function init() {
+          const modelURL = URL + "model.json";
+          const metadataURL = URL + "metadata.json";  
+          // load the model and metadata
+          // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
+          // or files from your local hard drive
+          // Note: the pose library adds "tmImage" object to your window (window.tmImage)
+          model = await tmImage.load(modelURL, metadataURL);
+          maxPredictions = model.getTotalClasses();
+  
+          // Convenience function to setup a webcam
+          const flip = true; // whether to flip the webcam
+          webcam = new tmImage.Webcam(200, 200, flip); // width, height, flip
+          await webcam.setup(); // request access to the webcam
+          await webcam.play();
+          window.requestAnimationFrame(loop);
+  
+          // append elements to the DOM
+          document.getElementById("webcam-container").appendChild(webcam.canvas);
+      }
+  
+      async function loop() {
+          webcam.update(); // update the webcam frame
+          await predict();
+          window.requestAnimationFrame(loop);
+      }
+  
+      // run the webcam image through the image model
+      async function predict() {
+          // predict can take in an image, video or canvas html element
+          const prediction = await model.predict(webcam.canvas);
+          console.log(prediction[0].probability);
+          if(prediction[0].probability > 0.5){
+              console.log('day');
+              document.querySelector('body').style.backgroundColor = 'white';
+              document.querySelector('body').style.color = 'black';
+              var pTags = document.querySelectorAll('p');
+              pTags.forEach(function(tag) {
+              tag.style.color = 'black';
+              });
+          } else {
+              console.log('night');
+              document.querySelector('body').style.backgroundColor = 'black';
+              document.querySelector('body').style.color = 'white'
+              var pTags = document.querySelectorAll('p');
+              pTags.forEach(function(tag) {
+              tag.style.color = 'white';
+              });
+          }
+      }
+      init();
+  </script>
+</body>
+</html>
